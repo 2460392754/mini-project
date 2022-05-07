@@ -1,12 +1,18 @@
 <template>
     <div id="app">
         <State />
-        <UserModule />
+        <Mutation />
+        <Getter />
+        <Action />
+        <!-- <UserModule /> -->
     </div>
 </template>
 
 <script>
 import State from './components/state.vue';
+import Getter from './components/getter.vue';
+import Mutation from './components/mutation.vue';
+import Action from './components/action.vue';
 import UserModule from './components/userModule.vue';
 
 export default {
@@ -14,7 +20,14 @@ export default {
 
     components: {
         State,
+        Getter,
+        Mutation,
+        Action,
         UserModule
+    },
+
+    created() {
+        console.log(this.$store);
     }
 };
 </script>

@@ -14,8 +14,12 @@
             <div>countList value: {{ age }}</div>
         </div>
         <div>
-            <button @click="onClickCommitAddUserModule">commit userModule</button>
-            <button @click="onClickDispatchAddUserModule">dispatch userModule</button>
+            <button @click="onClickCommitAddUserModule">
+                commit userModule
+            </button>
+            <button @click="onClickDispatchAddUserModule">
+                dispatch userModule
+            </button>
         </div>
     </div>
 </template>

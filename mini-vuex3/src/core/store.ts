@@ -1,58 +1,22 @@
 import type Vue from 'vue';
 import { config } from '../config';
-import { registerState, registerGetters, isModuleType } from '../utils';
-
-type Payload = any;
-
-type Getter = (state: State) => void;
-type Mutation = (state: State, payload: Payload) => void;
-type Action = ({ state: State, commit: Mutations }, payload: Payload) => void;
-
-interface State {
-    [key: string]: any;
-}
-
-export interface Getters {
-    [key: string]: Getter;
-}
-
-interface Mutations {
-    [key: string]: Mutation;
-}
-
-interface Actions {
-    [key: string]: Action;
-}
-
-interface Module {
-    name: string;
-    state?: State;
-    getters?: Getters;
-    mutations?: Mutations;
-    actions?: Actions;
-}
-
-interface Modules {
-    [key: string]: Module;
-}
-
-export interface Opts {
-    state?: State;
-    getters?: Getters;
-    mutations?: Mutations;
-    actions?: Actions;
-    modules?: Modules;
-}
+import {
+    registerState,
+    registerGetters,
+    registerModules,
+    isModuleType
+} from '../utils';
+import type { StoreOpts, Payload, Mutation, Action, State } from '../types';
 
 export class store {
     private _vm: Vue = null;
-    private mutations = Object.create(null);
-    private actions = Object.create(null);
-    private modules = Object.create(null);
+    private _mutations = Object.create(null);
+    private _actions = Object.create(null);
+    private _modules = Object.create(null);
 
     getters = null;
 
-    constructor(opts: Opts) {
+    constructor(opts: StoreOpts) {
         this._vm = new config._vue({
             data() {
                 return {
@@ -61,10 +25,12 @@ export class store {
             }
         });
 
-        this.getters = registerGetters(opts);
-        this.mutations = opts.mutations || {};
-        this.actions = opts.actions || {};
-        this.modules = opts.modules || {};
+        this.getters = registerGetters.call(this, opts || {});
+        this._mutations = opts.mutations || {};
+        this._actions = opts.actions || {};
+        this._modules = opts.modules || {};
+
+        registerModules(this._mutations, this._actions, this._modules);
     }
 
     get state() {
@@ -72,17 +38,16 @@ export class store {
     }
 
     commit(type: string, payload: Payload) {
-        let func: Mutation, state: State;
+        const func: Mutation = this._mutations[type];
+        let state: State;
 
         if (isModuleType(type)) {
-            const [name, moduleType] = type.split('/');
-            const module = this.modules[name];
+            const name = type.split('/')[0];
+            const module = this._modules[name];
 
             state = module.state;
-            func = module.mutations[moduleType];
         } else {
             state = this.state;
-            func = this.mutations[type];
         }
 
         // 未定义属性
@@ -94,21 +59,21 @@ export class store {
     }
 
     dispatch(type: string, payload: Payload) {
-        let func: Action, store: any;
+        const func: Action = this._actions[type];
+        let store: any;
 
         if (isModuleType(type)) {
-            const [name, moduleType] = type.split('/');
-            const module = this.modules[name];
+            const name = type.split('/')[0];
+            const module = this._modules[name];
 
-            func = module.actions[moduleType];
             store = module;
+            // 修改作用域范围
             Object.assign(store, {
                 commit: this.commit.bind(store),
-                dispatch: this.commit.bind(store)
+                dispatch: this.dispatch.bind(store)
             });
         } else {
             store = this;
-            func = this.actions[type];
         }
 
         // 未定义属性

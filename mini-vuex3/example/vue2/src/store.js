@@ -17,6 +17,7 @@ export const store = new Vuex.Store({
 
     mutations: {
         addCount(state, n) {
+            console.log('mutations addCount', arguments);
             state.count += n;
         },
         addCountList(state, n) {
@@ -34,6 +35,7 @@ export const store = new Vuex.Store({
     modules: {
         user: {
             name: 'user',
+            namespaced: true,
             state: {
                 name: 'fty',
                 age: 22
