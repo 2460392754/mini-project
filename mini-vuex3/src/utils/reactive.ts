@@ -6,7 +6,7 @@ import { Getters, State } from '../types';
  * @param state
  * @param res
  */
-export function reactiveGetters(getters: Getters, state: State, res: { [key: string]: Function }) {
+export function reactiveGetters(getters: Getters, state: State, res: { [key: string]: string }) {
     for (let key in getters) {
         Object.defineProperty(res, key, {
             get: () => {
