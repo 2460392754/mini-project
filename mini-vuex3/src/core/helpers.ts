@@ -4,39 +4,42 @@
  * @param map
  * @returns
  */
-function normalizeNamespace(namespace, map) {
-    if (typeof namespace !== 'string') {
-        map = namespace;
-        namespace = null;
+function normalizeNamespace(moduleName: string, opts: any) {
+    // 未定义 moduleName
+    if (typeof moduleName !== 'string') {
+        return {
+            moduleName: null,
+            opts: moduleName
+        };
     }
 
     return {
-        namespace,
-        map
+        moduleName,
+        opts
     };
 }
 
 /**
  * 处理命名空间（module类型）
- * @param namespace
+ * @param moduleName
  */
-function handleModuleStore(namespace: string | null) {
-    return namespace === null ? this.$store : this.$store._modules[namespace];
+function handleModuleStore(moduleName: string | null) {
+    return moduleName === null ? this.$store : this.$store._modules[moduleName];
 }
 
 /**
  * 处理命名空间（module类型）
- * @param namespace
+ * @param moduleName
  */
 function handleModuleType(
-    namespace: string | null,
+    moduleName: string | null,
     type: string,
     key: string | undefined
 ) {
     if (type === 'state') {
-        return namespace === null
+        return moduleName === null
             ? this.$store[type]
-            : this.$store[type][namespace];
+            : this.$store[type][moduleName];
     }
 
     if (key === undefined) {
@@ -45,8 +48,8 @@ function handleModuleType(
 
     let newKey = key;
 
-    if (namespace !== null) {
-        newKey = namespace + '/' + key;
+    if (moduleName !== null) {
+        newKey = moduleName + '/' + key;
     }
 
     return this.$store[type][newKey];
@@ -57,14 +60,14 @@ function handleModuleType(
  * @returns
  */
 export function mapState() {
-    const { namespace, map } = normalizeNamespace(arguments[0], arguments[1]);
+    const { moduleName, opts } = normalizeNamespace(arguments[0], arguments[1]);
     const resFunc = {};
 
     // 数组内容，例如： mapState(['x1', 'x2']) 或 mapState('xxxModule', ['xxx1', 'xxx2'])
-    if (Array.isArray(map)) {
-        map.forEach((stateKey) => {
+    if (Array.isArray(opts)) {
+        opts.forEach((stateKey) => {
             resFunc[stateKey] = function () {
-                return handleModuleType.call(this, namespace, 'state')[
+                return handleModuleType.call(this, moduleName, 'state')[
                     stateKey
                 ];
             };
@@ -74,14 +77,14 @@ export function mapState() {
     // 处理对象结构
     else {
         for (const [newStateKey, val] of Object.entries<string | Function>(
-            map
+            opts
         )) {
             // mapState({ xxFunc: (state) => state.xx1 }) 或  mapState({ xxFunc(state){ return state.xx1 + this.xxx1 } })
             if (typeof val === 'function') {
                 resFunc[newStateKey] = function () {
                     const state = handleModuleType.call(
                         this,
-                        namespace,
+                        moduleName,
                         'state'
                     );
 
@@ -93,7 +96,9 @@ export function mapState() {
             // mapState({ xxxxxxx1: 'x1' }) 或 mapState('xxxModule', { xxxxxxx1: 'x1' })
             else {
                 resFunc[newStateKey] = function () {
-                    return handleModuleType.call(this, namespace, 'state')[val];
+                    return handleModuleType.call(this, moduleName, 'state')[
+                        val
+                    ];
                 };
             }
         }
@@ -107,16 +112,16 @@ export function mapState() {
  * @returns
  */
 export function mapGetters() {
-    const { namespace, map } = normalizeNamespace(arguments[0], arguments[1]);
+    const { moduleName, opts } = normalizeNamespace(arguments[0], arguments[1]);
     const resFunc = {};
 
     // 数组内容，例如： mapGetters(['x1', 'x2']) 或 mapGetters('xxxModule', ['xxx1', 'xxx2'])
-    if (Array.isArray(map)) {
-        map.forEach((getterKey) => {
+    if (Array.isArray(opts)) {
+        opts.forEach((getterKey) => {
             resFunc[getterKey] = function () {
                 return handleModuleType.call(
                     this,
-                    namespace,
+                    moduleName,
                     'getters',
                     getterKey
                 );
@@ -125,12 +130,12 @@ export function mapGetters() {
     } else {
         // mapGetters({ xxxxxxx1: 'x1' }) 或 mapGetters('xxxModule', { xxxxxxx1: 'x1' })
         for (const [newGetterKey, oldGetterKey] of Object.entries<string>(
-            map
+            opts
         )) {
             resFunc[newGetterKey] = function () {
                 return handleModuleType.call(
                     this,
-                    namespace,
+                    moduleName,
                     'getters',
                     oldGetterKey
                 );
@@ -146,37 +151,37 @@ export function mapGetters() {
  * @returns
  */
 export function mapMutations() {
-    const { namespace, map } = normalizeNamespace(arguments[0], arguments[1]);
+    const { moduleName, opts } = normalizeNamespace(arguments[0], arguments[1]);
     const resFunc = {};
 
     // 数组内容，例如： mapMutations(['x1', 'x2']) 或 mapMutations('xxxModule', ['xxx1', 'xxx2'])
-    if (Array.isArray(map)) {
-        map.forEach((getterKey) => {
+    if (Array.isArray(opts)) {
+        opts.forEach((getterKey) => {
             resFunc[getterKey] = function (payload) {
                 const func = handleModuleType.call(
                     this,
-                    namespace,
+                    moduleName,
                     '_mutations',
                     getterKey
                 );
-                const state = handleModuleType.call(this, namespace, 'state');
+                const state = handleModuleType.call(this, moduleName, 'state');
 
                 return func(state, payload);
             };
         });
     } else {
         for (const [newGetterKey, oldGetterKey] of Object.entries<string>(
-            map
+            opts
         )) {
             // mapMutations({ xxxxxxx1: 'x1' }) 或 mapMutations('xxxModule', { xxxxxxx1: 'x1' })
             resFunc[newGetterKey] = function (payload) {
                 const func = handleModuleType.call(
                     this,
-                    namespace,
+                    moduleName,
                     '_mutations',
                     oldGetterKey
                 );
-                const state = handleModuleType.call(this, namespace, 'state');
+                const state = handleModuleType.call(this, moduleName, 'state');
 
                 return func(state, payload);
             };
@@ -191,20 +196,20 @@ export function mapMutations() {
  * @returns
  */
 export function mapActions() {
-    const { namespace, map } = normalizeNamespace(arguments[0], arguments[1]);
+    const { moduleName, opts } = normalizeNamespace(arguments[0], arguments[1]);
     const resFunc = {};
 
     // 数组内容，例如： mapActions(['x1', 'x2']) 或 mapActions('xxxModule', ['xxx1', 'xxx2'])
-    if (Array.isArray(map)) {
-        map.forEach((getterKey) => {
+    if (Array.isArray(opts)) {
+        opts.forEach((getterKey) => {
             resFunc[getterKey] = function (payload) {
                 const func = handleModuleType.call(
                     this,
-                    namespace,
+                    moduleName,
                     '_actions',
                     getterKey
                 );
-                let store = handleModuleStore.call(this, namespace);
+                let store = handleModuleStore.call(this, moduleName);
 
                 store = Object.assign(
                     { ...store },
@@ -219,13 +224,13 @@ export function mapActions() {
         });
     } else {
         for (const [newGetterKey, oldGetterKey] of Object.entries<string>(
-            map
+            opts
         )) {
             // mapActions({ xxxxxxx1: 'x1' }) 或 mapActions('xxxModule', { xxxxxxx1: 'x1' })
             resFunc[newGetterKey] = function (payload) {
                 let store = handleModuleStore.call(
                     this,
-                    namespace,
+                    moduleName,
                     '_actions',
                     oldGetterKey
                 );
