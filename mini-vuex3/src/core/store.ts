@@ -8,7 +8,7 @@ import {
 } from '../utils';
 import type { StoreOpts, Payload, Mutation, Action, State } from '../types';
 
-// 保存当前引用
+// 保存当前vue引用, 确保和项目使用相同的引用
 let _vue: VueConstructor;
 
 export class store {
@@ -30,8 +30,8 @@ export class store {
     /**
      * 设置 state的get访问器
      */
-    get state() {
-        return (this._vm as any)._data.state;
+    get state(): State {
+        return this._vm.$data._state;
     }
 
     /**
@@ -43,18 +43,19 @@ export class store {
     }
 
     constructor(opts: StoreOpts) {
+        // 添加 原型属性，指向当前store实例化后的对象
         _vue.prototype.$store = this;
 
-        // state对象 响应式处理
+        // _state对象 响应式处理, 需要通知项目视图更新
         this._vm = new _vue({
             data() {
                 return {
-                    state: registerState(opts)
+                    _state: registerState(opts)
                 };
             }
         });
 
-        this.getters = registerGetters.call(this, opts || {});
+        this.getters = registerGetters(this.state, opts || {});
         this._mutations = opts.mutations || {};
         this._actions = opts.actions || {};
         this._modules = opts.modules || {};

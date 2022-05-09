@@ -39,9 +39,9 @@ export default {
     input: './src/index.ts',
     output: {
         name: 'library',
-        format: 'umd',
-        // format: 'esm',
+        // format: 'umd',
+        format: 'es',
         file: 'dist/index.js',
-        sourcemap: true
+        sourcemap: true,
     }
 };

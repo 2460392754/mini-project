@@ -1,10 +1,10 @@
 import type {
     StoreOpts,
+    State,
     Modules,
     Module,
     Mutations,
-    Actions,
-    Action
+    Actions
 } from '../types';
 import { reactiveGetters } from './reactive';
 
@@ -46,14 +46,11 @@ export function registerState(opts: StoreOpts) {
 
 /**
  * 注册 getters
- * @param state
- * @param getters
- * @returns
  */
-export function registerGetters(opts: StoreOpts) {
+export function registerGetters(state: State, opts: StoreOpts) {
     const getters: any = {};
 
-    reactiveGetters(opts.getters, this.state, getters);
+    reactiveGetters(opts.getters, state, getters);
 
     Object.values(opts.modules || {}).forEach((module) => {
         if (module.namespaced === true) {
@@ -61,9 +58,9 @@ export function registerGetters(opts: StoreOpts) {
                 module.name,
                 module.getters
             );
-            reactiveGetters(newGetters, this.state[module.name], getters);
+            reactiveGetters(newGetters, state[module.name], getters);
         } else {
-            reactiveGetters(module.getters, this.state[module.name], getters);
+            reactiveGetters(module.getters, state[module.name], getters);
         }
     });
 
@@ -72,7 +69,6 @@ export function registerGetters(opts: StoreOpts) {
 
 /**
  * 注册 modules
- * @param opts
  */
 export function registerModules(
     mutations: Mutations,
