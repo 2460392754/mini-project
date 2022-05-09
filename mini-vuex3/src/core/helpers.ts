@@ -9,13 +9,13 @@ function normalizeNamespace(moduleName: string, opts: any) {
     if (typeof moduleName !== 'string') {
         return {
             moduleName: null,
-            opts: moduleName
+            opts: moduleName,
         };
     }
 
     return {
         moduleName,
-        opts
+        opts,
     };
 }
 
@@ -31,15 +31,9 @@ function handleModuleStore(moduleName: string | null) {
  * 处理命名空间（module类型）
  * @param moduleName
  */
-function handleModuleType(
-    moduleName: string | null,
-    type: string,
-    key: string | undefined
-) {
+function handleModuleType(moduleName: string | null, type: string, key: string | undefined) {
     if (type === 'state') {
-        return moduleName === null
-            ? this.$store[type]
-            : this.$store[type][moduleName];
+        return moduleName === null ? this.$store[type] : this.$store[type][moduleName];
     }
 
     if (key === undefined) {
@@ -67,26 +61,18 @@ export function mapState() {
     if (Array.isArray(opts)) {
         opts.forEach((stateKey) => {
             resFunc[stateKey] = function () {
-                return handleModuleType.call(this, moduleName, 'state')[
-                    stateKey
-                ];
+                return handleModuleType.call(this, moduleName, 'state')[stateKey];
             };
         });
     }
 
     // 处理对象结构
     else {
-        for (const [newStateKey, val] of Object.entries<string | Function>(
-            opts
-        )) {
+        for (const [newStateKey, val] of Object.entries<string | Function>(opts)) {
             // mapState({ xxFunc: (state) => state.xx1 }) 或  mapState({ xxFunc(state){ return state.xx1 + this.xxx1 } })
             if (typeof val === 'function') {
                 resFunc[newStateKey] = function () {
-                    const state = handleModuleType.call(
-                        this,
-                        moduleName,
-                        'state'
-                    );
+                    const state = handleModuleType.call(this, moduleName, 'state');
 
                     // 修改this指向，处理 回调函数中使用当前vm实例中的 data 或 computed 变量
                     return val.call(this, state);
@@ -96,9 +82,7 @@ export function mapState() {
             // mapState({ xxxxxxx1: 'x1' }) 或 mapState('xxxModule', { xxxxxxx1: 'x1' })
             else {
                 resFunc[newStateKey] = function () {
-                    return handleModuleType.call(this, moduleName, 'state')[
-                        val
-                    ];
+                    return handleModuleType.call(this, moduleName, 'state')[val];
                 };
             }
         }
@@ -119,26 +103,14 @@ export function mapGetters() {
     if (Array.isArray(opts)) {
         opts.forEach((getterKey) => {
             resFunc[getterKey] = function () {
-                return handleModuleType.call(
-                    this,
-                    moduleName,
-                    'getters',
-                    getterKey
-                );
+                return handleModuleType.call(this, moduleName, 'getters', getterKey);
             };
         });
     } else {
         // mapGetters({ xxxxxxx1: 'x1' }) 或 mapGetters('xxxModule', { xxxxxxx1: 'x1' })
-        for (const [newGetterKey, oldGetterKey] of Object.entries<string>(
-            opts
-        )) {
+        for (const [newGetterKey, oldGetterKey] of Object.entries<string>(opts)) {
             resFunc[newGetterKey] = function () {
-                return handleModuleType.call(
-                    this,
-                    moduleName,
-                    'getters',
-                    oldGetterKey
-                );
+                return handleModuleType.call(this, moduleName, 'getters', oldGetterKey);
             };
         }
     }
@@ -158,29 +130,17 @@ export function mapMutations() {
     if (Array.isArray(opts)) {
         opts.forEach((getterKey) => {
             resFunc[getterKey] = function (payload) {
-                const func = handleModuleType.call(
-                    this,
-                    moduleName,
-                    '_mutations',
-                    getterKey
-                );
+                const func = handleModuleType.call(this, moduleName, '_mutations', getterKey);
                 const state = handleModuleType.call(this, moduleName, 'state');
 
                 return func(state, payload);
             };
         });
     } else {
-        for (const [newGetterKey, oldGetterKey] of Object.entries<string>(
-            opts
-        )) {
+        for (const [newGetterKey, oldGetterKey] of Object.entries<string>(opts)) {
             // mapMutations({ xxxxxxx1: 'x1' }) 或 mapMutations('xxxModule', { xxxxxxx1: 'x1' })
             resFunc[newGetterKey] = function (payload) {
-                const func = handleModuleType.call(
-                    this,
-                    moduleName,
-                    '_mutations',
-                    oldGetterKey
-                );
+                const func = handleModuleType.call(this, moduleName, '_mutations', oldGetterKey);
                 const state = handleModuleType.call(this, moduleName, 'state');
 
                 return func(state, payload);
@@ -203,19 +163,14 @@ export function mapActions() {
     if (Array.isArray(opts)) {
         opts.forEach((getterKey) => {
             resFunc[getterKey] = function (payload) {
-                const func = handleModuleType.call(
-                    this,
-                    moduleName,
-                    '_actions',
-                    getterKey
-                );
+                const func = handleModuleType.call(this, moduleName, '_actions', getterKey);
                 let store = handleModuleStore.call(this, moduleName);
 
                 store = Object.assign(
                     { ...store },
                     {
                         commit: this.$store.commit.bind(store),
-                        dispatch: this.$store.dispatch.bind(store)
+                        dispatch: this.$store.dispatch.bind(store),
                     }
                 );
 
@@ -223,23 +178,16 @@ export function mapActions() {
             };
         });
     } else {
-        for (const [newGetterKey, oldGetterKey] of Object.entries<string>(
-            opts
-        )) {
+        for (const [newGetterKey, oldGetterKey] of Object.entries<string>(opts)) {
             // mapActions({ xxxxxxx1: 'x1' }) 或 mapActions('xxxModule', { xxxxxxx1: 'x1' })
             resFunc[newGetterKey] = function (payload) {
-                let store = handleModuleStore.call(
-                    this,
-                    moduleName,
-                    '_actions',
-                    oldGetterKey
-                );
+                let store = handleModuleStore.call(this, moduleName, '_actions', oldGetterKey);
 
                 store = Object.assign(
                     { ...store },
                     {
                         commit: this.$store.commit.bind(store),
-                        dispatch: this.$store.dispatch.bind(store)
+                        dispatch: this.$store.dispatch.bind(store),
                     }
                 );
 

@@ -12,7 +12,7 @@ console.log('env:', env);
 
 const plugins = [
     clear({
-        targets: ['./dist']
+        targets: ['./dist'],
     }),
     sourcemaps(),
     commonjs(),
@@ -22,11 +22,11 @@ const plugins = [
             compilerOptions: {
                 declaration: true,
                 target: 'es6',
-                module: 'es6'
+                module: 'es6',
             },
-            include: ['src/**/*.ts']
-        }
-    })
+            include: ['src/**/*.ts'],
+        },
+    }),
     // filesize()
 ];
 
@@ -43,5 +43,5 @@ export default {
         format: 'es',
         file: 'dist/index.js',
         sourcemap: true,
-    }
+    },
 };

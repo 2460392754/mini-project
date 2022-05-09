@@ -2,10 +2,7 @@ export type Payload = any;
 
 export type Getter = (state: State) => void;
 export type Mutation = (state: State, payload: Payload) => void;
-export type Action = (
-    { state: State, commit: Mutations },
-    payload: Payload
-) => void;
+export type Action = ({ state: State, commit: Mutations }, payload: Payload) => void;
 
 export interface State {
     [key: string]: any;

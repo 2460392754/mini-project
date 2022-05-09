@@ -14,12 +14,8 @@
             <div>countList value: {{ age }}</div>
         </div>
         <div>
-            <button @click="onClickCommitAddUserModule">
-                commit userModule
-            </button>
-            <button @click="onClickDispatchAddUserModule">
-                dispatch userModule
-            </button>
+            <button @click="onClickCommitAddUserModule">commit userModule</button>
+            <button @click="onClickDispatchAddUserModule">dispatch userModule</button>
         </div>
     </div>
 </template>
@@ -30,7 +26,7 @@ import { mapState } from '../../../../dist';
 export default {
     data() {
         return {
-            tips: 'mapState userAgeFunc2 value: '
+            tips: 'mapState userAgeFunc2 value: ',
         };
     },
 
@@ -41,8 +37,8 @@ export default {
             userAgeFunc: (state) => state.age,
             userAgeFunc2(state) {
                 return this.tips + state.age;
-            }
-        })
+            },
+        }),
     },
 
     methods: {
@@ -52,7 +48,7 @@ export default {
 
         onClickDispatchAddUserModule() {
             this.$store.dispatch('user/handleUserInfo', 2);
-        }
-    }
+        },
+    },
 };
 </script>

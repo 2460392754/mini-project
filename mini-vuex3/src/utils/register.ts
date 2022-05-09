@@ -1,11 +1,4 @@
-import type {
-    StoreOpts,
-    State,
-    Modules,
-    Module,
-    Mutations,
-    Actions
-} from '../types';
+import type { StoreOpts, State, Modules, Module, Mutations, Actions } from '../types';
 import { reactiveGetters } from './reactive';
 
 /**
@@ -14,10 +7,7 @@ import { reactiveGetters } from './reactive';
  * @param data
  * @returns
  */
-function setModuleNameDataKey(
-    moduleName: string,
-    data: { [key: string]: Function }
-) {
+function setModuleNameDataKey(moduleName: string, data: { [key: string]: Function }) {
     const res = {};
 
     Object.keys(data).forEach((key) => {
@@ -54,10 +44,7 @@ export function registerGetters(state: State, opts: StoreOpts) {
 
     Object.values(opts.modules || {}).forEach((module) => {
         if (module.namespaced === true) {
-            const newGetters = setModuleNameDataKey(
-                module.name,
-                module.getters
-            );
+            const newGetters = setModuleNameDataKey(module.name, module.getters);
             reactiveGetters(newGetters, state[module.name], getters);
         } else {
             reactiveGetters(module.getters, state[module.name], getters);
@@ -70,11 +57,7 @@ export function registerGetters(state: State, opts: StoreOpts) {
 /**
  * 注册 modules
  */
-export function registerModules(
-    mutations: Mutations,
-    actions: Actions,
-    modules: Modules
-) {
+export function registerModules(mutations: Mutations, actions: Actions, modules: Modules) {
     Object.keys(modules).forEach((key) => {
         const module = modules[key] as Module & {
             _actions: Actions;
@@ -91,10 +74,7 @@ export function registerModules(
         let moduleMutations = module._mutations;
 
         if (module.namespaced === true) {
-            moduleMutations = setModuleNameDataKey(
-                module.name,
-                moduleMutations
-            );
+            moduleMutations = setModuleNameDataKey(module.name, moduleMutations);
             moduleActions = setModuleNameDataKey(module.name, moduleActions);
         }
 

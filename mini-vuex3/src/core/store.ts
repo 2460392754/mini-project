@@ -1,11 +1,6 @@
 import type { VueConstructor } from 'vue';
 import type Vue from 'vue';
-import {
-    registerState,
-    registerGetters,
-    registerModules,
-    isModuleType
-} from '../utils';
+import { registerState, registerGetters, registerModules, isModuleType } from '../utils';
 import type { StoreOpts, Payload, Mutation, Action, State } from '../types';
 
 // 保存当前vue引用, 确保和项目使用相同的引用
@@ -50,9 +45,9 @@ export class store {
         this._vm = new _vue({
             data() {
                 return {
-                    _state: registerState(opts)
+                    _state: registerState(opts),
                 };
-            }
+            },
         });
 
         this.getters = registerGetters(this.state, opts || {});
@@ -111,7 +106,7 @@ export class store {
             // 修改作用域范围
             Object.assign(store, {
                 commit: this.commit.bind(store),
-                dispatch: this.dispatch.bind(store)
+                dispatch: this.dispatch.bind(store),
             });
         } else {
             store = this;

@@ -4,6 +4,6 @@
  * @param name
  * @returns
  */
-export function isModuleType(name) {
+export function isModuleType(name: string) {
     return /^\w+\/\w+$/.test(name);
 }

@@ -21,13 +21,13 @@ export default {
     computed: {
         ...mapGetters(['getCount']),
         ...mapGetters({
-            myGetCount: 'getCount'
+            myGetCount: 'getCount',
         }),
 
         ...mapGetters('user', ['getUserInfo']),
         ...mapGetters('user', {
-            myGetUserInfo: 'getUserInfo'
-        })
-    }
+            myGetUserInfo: 'getUserInfo',
+        }),
+    },
 };
 </script>

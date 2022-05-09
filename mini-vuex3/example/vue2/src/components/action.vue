@@ -20,8 +20,8 @@ export default {
         ...mapActions(['handleCount']),
         ...mapActions('user', ['handleUserInfo']),
         ...mapActions('user', {
-            myHandleUserInfo: 'handleUserInfo'
-        })
-    }
+            myHandleUserInfo: 'handleUserInfo',
+        }),
+    },
 };
 </script>

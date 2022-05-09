@@ -17,8 +17,8 @@ export default {
     methods: {
         ...mapMutations(['addCount']),
         ...mapMutations({
-            myAddCount: 'addCount'
-        })
-    }
+            myAddCount: 'addCount',
+        }),
+    },
 };
 </script>

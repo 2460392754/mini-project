@@ -23,12 +23,12 @@ export default {
         Getter,
         Mutation,
         Action,
-        UserModule
+        UserModule,
     },
 
     created() {
         console.log(this.$store);
-    }
+    },
 };
 </script>
 

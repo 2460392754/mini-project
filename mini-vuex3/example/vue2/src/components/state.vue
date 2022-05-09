@@ -25,7 +25,7 @@ import { mapState } from '../../../../dist';
 export default {
     data() {
         return {
-            tips: 'mapState.countListFunc2 value: '
+            tips: 'mapState.countListFunc2 value: ',
         };
     },
 
@@ -36,8 +36,8 @@ export default {
             cListFunc: (state) => state.countList,
             cListFunc2(state) {
                 return this.tips + '[ ' + state.countList.join(', ') + ' ]';
-            }
-        })
+            },
+        }),
     },
 
     methods: {
@@ -47,7 +47,7 @@ export default {
 
         onClickDispatchAddCount() {
             this.$store.dispatch('handleCount', 2);
-        }
-    }
+        },
+    },
 };
 </script>
