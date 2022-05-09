@@ -9,7 +9,7 @@ import type {
 import { reactiveGetters } from './reactive';
 
 /**
- * 设置
+ * 修改 modules 中对象的键名, 使用 module.name 追加拼接
  * @param moduleName
  * @param data
  * @returns

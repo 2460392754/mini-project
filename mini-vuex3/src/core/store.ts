@@ -72,6 +72,11 @@ export class store {
         const func: Mutation = this._mutations[type];
         let state: State;
 
+        // 未定义属性
+        if (typeof func === 'undefined') {
+            throw new Error(`unknown mutation type: ${type}`);
+        }
+
         if (isModuleType(type)) {
             const name = type.split('/')[0];
             const module = this._modules[name];
@@ -79,11 +84,6 @@ export class store {
             state = module.state;
         } else {
             state = this.state;
-        }
-
-        // 未定义属性
-        if (typeof func === 'undefined') {
-            throw new Error(`unknown mutation type: ${type}`);
         }
 
         func.call(this, state, payload);
@@ -98,6 +98,11 @@ export class store {
         const func: Action = this._actions[type];
         let store: any;
 
+        // 未定义属性
+        if (typeof func === 'undefined') {
+            throw new Error(`unknown action type: ${type}`);
+        }
+
         if (isModuleType(type)) {
             const name = type.split('/')[0];
             const module = this._modules[name];
@@ -110,11 +115,6 @@ export class store {
             });
         } else {
             store = this;
-        }
-
-        // 未定义属性
-        if (typeof func === 'undefined') {
-            throw new Error(`unknown action type: ${type}`);
         }
 
         func.call(this, store, payload);
