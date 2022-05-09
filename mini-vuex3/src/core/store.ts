@@ -8,6 +8,7 @@ import {
 } from '../utils';
 import type { StoreOpts, Payload, Mutation, Action, State } from '../types';
 
+// 保存当前引用
 let _vue: VueConstructor;
 
 export class store {
@@ -16,11 +17,30 @@ export class store {
     private _actions = Object.create(null);
     private _modules = Object.create(null);
 
+    getters = null;
+
+    /**
+     * 插件注册
+     * @param vue
+     */
     static install(vue: VueConstructor) {
         _vue = vue;
     }
 
-    getters = null;
+    /**
+     * 设置 state的get访问器
+     */
+    get state() {
+        return (this._vm as any)._data.$$state;
+    }
+
+    /**
+     * 设置 state的set访问器
+     * 禁止直接写入数据
+     */
+    set state(v: any) {
+        throw new Error("can't set state: " + v);
+    }
 
     constructor(opts: StoreOpts) {
         _vue.prototype.$store = this;
@@ -41,10 +61,11 @@ export class store {
         registerModules(this._mutations, this._actions, this._modules);
     }
 
-    get state() {
-        return (this._vm as any)._data.$$state;
-    }
-
+    /**
+     *
+     * @param type
+     * @param payload
+     */
     commit(type: string, payload: Payload) {
         const func: Mutation = this._mutations[type];
         let state: State;
@@ -66,6 +87,11 @@ export class store {
         func.call(this, state, payload);
     }
 
+    /**
+     *
+     * @param type
+     * @param payload
+     */
     dispatch(type: string, payload: Payload) {
         const func: Action = this._actions[type];
         let store: any;
