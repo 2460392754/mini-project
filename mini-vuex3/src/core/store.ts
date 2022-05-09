@@ -13,9 +13,9 @@ let _vue: VueConstructor;
 
 export class store {
     private _vm: Vue = null;
-    private _mutations = Object.create(null);
-    private _actions = Object.create(null);
-    private _modules = Object.create(null);
+    private _mutations = null;
+    private _actions = null;
+    private _modules = null;
 
     getters = null;
 
@@ -31,7 +31,7 @@ export class store {
      * 设置 state的get访问器
      */
     get state() {
-        return (this._vm as any)._data.$$state;
+        return (this._vm as any)._data.state;
     }
 
     /**
@@ -45,10 +45,11 @@ export class store {
     constructor(opts: StoreOpts) {
         _vue.prototype.$store = this;
 
+        // state对象 响应式处理
         this._vm = new _vue({
             data() {
                 return {
-                    $$state: registerState(opts)
+                    state: registerState(opts)
                 };
             }
         });

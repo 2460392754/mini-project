@@ -41,10 +41,7 @@ export function registerState(opts: StoreOpts) {
         moduleStates[module.name] = module.state || {};
     });
 
-    return {
-        ...moduleStates,
-        ...(opts.state || {})
-    };
+    return Object.assign(moduleStates, opts.state || {});
 }
 
 /**
