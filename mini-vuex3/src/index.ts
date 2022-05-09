@@ -1,7 +1,7 @@
-import { store, install } from './core';
+import { store as Store } from './core';
 
 export * from './core/helpers';
 export default {
-    Store: store,
-    install
+    Store,
+    install: Store.install
 };

@@ -1,5 +1,5 @@
+import type { VueConstructor } from 'vue';
 import type Vue from 'vue';
-import { config } from '../config';
 import {
     registerState,
     registerGetters,
@@ -8,16 +8,24 @@ import {
 } from '../utils';
 import type { StoreOpts, Payload, Mutation, Action, State } from '../types';
 
+let _vue: VueConstructor;
+
 export class store {
     private _vm: Vue = null;
     private _mutations = Object.create(null);
     private _actions = Object.create(null);
     private _modules = Object.create(null);
 
+    static install(vue: VueConstructor) {
+        _vue = vue;
+    }
+
     getters = null;
 
     constructor(opts: StoreOpts) {
-        this._vm = new config._vue({
+        _vue.prototype.$store = this;
+
+        this._vm = new _vue({
             data() {
                 return {
                     $$state: registerState(opts)
