@@ -18,6 +18,7 @@
     -   ✅ `mutations` 功能
     -   ✅ `actions` 功能
     -   ✅ `modules` 功能
+    -   ✅ `module.name` 功能
     -   ✅ `module.namespaced` 功能
 
 -   实例属性
