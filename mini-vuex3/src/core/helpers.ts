@@ -191,8 +191,6 @@ export function mapActions() {
                     }
                 );
 
-                console.log(store);
-
                 return store['_actions'][oldGetterKey](store, payload);
             };
         }
