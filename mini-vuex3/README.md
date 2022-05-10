@@ -4,6 +4,8 @@
 
 [github:vuejs/vuex@3.6.2](https://github.com/vuejs/vuex/tree/v3.6.2)
 
+[blog:mini-vuex3](https://blog.965.ink/2022/05/07/mini-project/mini-vuex3/)
+
 ## 实现功能
 
 -   基本
